@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "appTitle": "Mood Map",
+  "selectMood": "Select your mood",
+  "happy": "Happy",
+  "sad": "Sad",
+  "neutral": "Neutral",
+  "saveMood": "Save Mood",
+  "moodSaved": "Mood saved",
+  "moodHistory": "Mood History",
+  "noMoodHistory": "No mood history"
+}
