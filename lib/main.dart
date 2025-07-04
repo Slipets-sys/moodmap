@@ -1,3 +1,24 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MoodMapApp());
+}
+
+class MoodMapApp extends StatelessWidget {
+  const MoodMapApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Scaffold(
+        body: SafeArea(
+          child: MoodSelector(),
+        ),
+      ),
+    );
+  }
+}
+
 class MoodSelector extends StatefulWidget {
   const MoodSelector({super.key});
 
