@@ -1,43 +1,3 @@
-import 'package:flutter/material.dart';
-import 'generated/l10n.dart';
-
-void main() {
-  runApp(const MoodMapApp());
-}
-
-class MoodMapApp extends StatefulWidget {
-  const MoodMapApp({super.key});
-
-  @override
-  State<MoodMapApp> createState() => _MoodMapAppState();
-}
-
-class _MoodMapAppState extends State<MoodMapApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MoodMap',
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
-      ),
-      body: const MoodSelector(),
-    );
-  }
-}
-
 class MoodSelector extends StatefulWidget {
   const MoodSelector({super.key});
 
@@ -48,11 +8,18 @@ class MoodSelector extends StatefulWidget {
 class _MoodSelectorState extends State<MoodSelector> {
   String? _selectedMood;
 
+  final List<Map<String, String>> _moods = [
+    {'emoji': '😃', 'label': 'Весело'},
+    {'emoji': '😢', 'label': 'Сумно'},
+    {'emoji': '😐', 'label': 'Нейтрально'},
+    {'emoji': '😠', 'label': 'Злість'},
+    {'emoji': '😌', 'label': 'Спокійно'},
+    {'emoji': '😫', 'label': 'Втома'},
+  ];
+
   void _saveMood() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${AppLocalizations.of(context)!.moodSaved}: $_selectedMood'),
-      ),
+      SnackBar(content: Text('Настрій збережено: $_selectedMood')),
     );
     setState(() {
       _selectedMood = null;
@@ -61,67 +28,72 @@ class _MoodSelectorState extends State<MoodSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final local = AppLocalizations.of(context)!;
-
-    return Column(
-      children: [
-        Text(local.selectMood),
-        DropdownButton<String>(
-          value: _selectedMood,
-          hint: Text(local.selectMood),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedMood = newValue;
-            });
-          },
-          items: <String>[
-            local.happy,
-            local.sad,
-            local.neutral,
-          ].map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-        ElevatedButton(
-          onPressed: _selectedMood == null ? null : _saveMood,
-          child: Text(local.saveMood),
-        ),
-      ],
-    );
-  }
-}
-
-class MoodHistoryPage extends StatefulWidget {
-  const MoodHistoryPage({super.key});
-
-  @override
-  State<MoodHistoryPage> createState() => _MoodHistoryPageState();
-}
-
-class _MoodHistoryPageState extends State<MoodHistoryPage> {
-  final List<String> _moodHistory = [];
-
-  @override
-  Widget build(BuildContext context) {
-    final local = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(local.moodHistory),
-      ),
-      body: _moodHistory.isEmpty
-          ? Center(child: Text(local.noMoodHistory))
-          : ListView.builder(
-              itemCount: _moodHistory.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_moodHistory[index]),
-                );
-              },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'MoodMap',
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Як ти себе почуваєш?',
+            style: TextStyle(fontSize: 20),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: _moods.map((mood) {
+              final isSelected = _selectedMood == mood['label'];
+              return ChoiceChip(
+                label: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      mood['emoji']!,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(mood['label']!),
+                  ],
+                ),
+                selected: isSelected,
+                selectedColor: Colors.blue.shade100,
+                onSelected: (_) {
+                  setState(() {
+                    _selectedMood = mood['label'];
+                  });
+                },
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                backgroundColor: Colors.grey.shade200,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              );
+            }).toList(),
+          ),
+          const Spacer(),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _selectedMood == null ? null : _saveMood,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Зберегти'),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
