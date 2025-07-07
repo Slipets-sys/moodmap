@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "appTitle": "MoodMap",
+  "selectMood": "Select your mood",
+  "saveMood": "Save Mood",
+  "moodSaved": "Mood saved",
+  "moodHistory": "Mood History",
+  "noMoodHistory": "No mood history",
+  "happy": "😊 Happy",
+  "sad": "😢 Sad",
+  "angry": "😠 Angry",
+  "calm": "😌 Calm"
+}
