@@ -17,7 +17,10 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.0'  # вкажи твою версію Flutter
+        flutter-version: '3.32.4'  # <--- найновіша, як у тебе локально
+
+    - name: Remove Flutter build cache
+      run: flutter clean
 
     - name: Install dependencies
       run: flutter pub get
