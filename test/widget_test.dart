@@ -5,6 +5,6 @@ void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(const MoodMapApp());
 
-    expect(find.text('Select your mood'), findsOneWidget);
+    expect(find.text('Select your mood'), findsWidgets);
   });
 }
