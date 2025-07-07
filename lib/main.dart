@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
@@ -67,42 +68,39 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       _moodHistory.clear();
-      _moodHistory.addAll(
-        data.map((e) => MoodEntry.fromJson(jsonDecode(e))),
-      );
+      _moodHistory.addAll(data.map((e) => MoodEntry.fromJson(jsonDecode(e))));
     });
   }
 
   Future<void> _saveMood() async {
-  if (_selectedMood == null) return;
+    if (_selectedMood == null) return;
 
-  final entry = MoodEntry(mood: _selectedMood!, date: DateTime.now());
-  _moodHistory.insert(0, entry);
+    final entry = MoodEntry(mood: _selectedMood!, date: DateTime.now());
+    _moodHistory.insert(0, entry);
 
-  final prefs = await SharedPreferences.getInstance();
-  final data = _moodHistory.map((e) => jsonEncode(e.toJson())).toList();
-  await prefs.setStringList('moodHistory', data);
+    final prefs = await SharedPreferences.getInstance();
+    final data = _moodHistory.map((e) => jsonEncode(e.toJson())).toList();
+    await prefs.setStringList('moodHistory', data);
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  setState(() {
-    _selectedMood = null;
-  });
+    setState(() {
+      _selectedMood = null;
+    });
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        '${AppLocalizations.of(context)!.moodSaved}: ${entry.mood}',
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${AppLocalizations.of(context)!.moodSaved}: ${entry.mood}',
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   void _openHistory() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>
-            MoodHistoryPage(moodHistory: _moodHistory),
+        builder: (context) => MoodHistoryPage(moodHistory: _moodHistory),
       ),
     );
   }
@@ -145,7 +143,7 @@ class _HomePageState extends State<HomePage> {
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Text(_moodEmoji[value] ?? value),
                 );
               }).toList(),
             ),
@@ -157,27 +155,27 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
-onPressed: () async {
-  final navigator = Navigator.of(context); // ✅ зберігаємо до await
+              onPressed: () async {
+                final navigator = Navigator.of(context);
 
-  final prefs = await SharedPreferences.getInstance();
-  final moodData = prefs.getStringList('moodHistory') ?? [];
+                final prefs = await SharedPreferences.getInstance();
+                final moodData = prefs.getStringList('moodHistory') ?? [];
 
-  final history = moodData.map((entry) {
-    final decoded = jsonDecode(entry);
-    return MoodEntry(
-      mood: decoded['mood'],
-      date: DateTime.parse(decoded['date']),
-    );
-  }).toList();
+                final history = moodData.map((entry) {
+                  final decoded = jsonDecode(entry);
+                  return MoodEntry(
+                    mood: decoded['mood'],
+                    date: DateTime.parse(decoded['date']),
+                  );
+                }).toList();
 
-  navigator.push(
-    MaterialPageRoute(
-      builder: (context) => MoodHistoryPage(moodHistory: history),
-    ),
-  );
-},
-
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MoodHistoryPage(moodHistory: history),
+                  ),
+                );
+              },
               icon: const Icon(Icons.auto_awesome),
               label: Text(local.moodHistory),
             ),
@@ -186,6 +184,17 @@ onPressed: () async {
       ),
     );
   }
+
+  final Map<String, String> _moodEmoji = {
+    'Happy': '😊 Happy',
+    'Sad': '😢 Sad',
+    'Angry': '😠 Angry',
+    'Calm': '😌 Calm',
+    'Щасливий': '😊 Щасливий',
+    'Сумний': '😢 Сумний',
+    'Злий': '😠 Злий',
+    'Спокійний': '😌 Спокійний',
+  };
 }
 
 class MoodHistoryPage extends StatelessWidget {
@@ -216,10 +225,16 @@ class MoodHistoryPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final entry = moodHistory[index];
                 final formattedDate =
-                    '${entry.date.day.toString().padLeft(2, '0')}.${entry.date.month.toString().padLeft(2, '0')}.${entry.date.year}';
+                    DateFormat('dd.MM.yyyy').format(entry.date);
 
                 return ListTile(
-                  leading: const Icon(Icons.history, color: Colors.teal),
+                  leading: CircleAvatar(
+                    backgroundColor: _moodColors[entry.mood] ?? Colors.grey,
+                    child: Text(
+                      _moodIcons[entry.mood] ?? '🙂',
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
                   title: Text(entry.mood),
                   subtitle: Text(formattedDate),
                 );
@@ -227,4 +242,26 @@ class MoodHistoryPage extends StatelessWidget {
             ),
     );
   }
+
+  static const Map<String, Color> _moodColors = {
+    'Happy': Colors.yellow,
+    'Sad': Colors.blue,
+    'Angry': Colors.red,
+    'Calm': Colors.green,
+    'Щасливий': Colors.yellow,
+    'Сумний': Colors.blue,
+    'Злий': Colors.red,
+    'Спокійний': Colors.green,
+  };
+
+  static const Map<String, String> _moodIcons = {
+    'Happy': '😊',
+    'Sad': '😢',
+    'Angry': '😠',
+    'Calm': '😌',
+    'Щасливий': '😊',
+    'Сумний': '😢',
+    'Злий': '😠',
+    'Спокійний': '😌',
+  };
 }
