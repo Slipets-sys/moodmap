@@ -37,4 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calm => '😌 Calm';
+
+  @override
+  String get mapTitle => 'Emotion Map';
 }

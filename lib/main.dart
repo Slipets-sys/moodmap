@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'l10n/app_localizations.dart';
+import 'map_page.dart'; // ✅ ДОДАНО
 
 void main() {
   runApp(const MoodMapApp());
@@ -105,6 +106,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  final Map<String, String> _moodEmoji = {
+    'Happy': '😊 Happy',
+    'Sad': '😢 Sad',
+    'Angry': '😠 Angry',
+    'Calm': '😌 Calm',
+    'Щасливий': '😊 Щасливий',
+    'Сумний': '😢 Сумний',
+    'Злий': '😠 Злий',
+    'Спокійний': '😌 Спокійний',
+  };
+
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
@@ -179,22 +191,21 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.auto_awesome),
               label: Text(local.moodHistory),
             ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.map),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const MapPage()),
+                );
+              },
+              label: Text(local.mapTitle),
+            ),
           ],
         ),
       ),
     );
   }
-
-  final Map<String, String> _moodEmoji = {
-    'Happy': '😊 Happy',
-    'Sad': '😢 Sad',
-    'Angry': '😠 Angry',
-    'Calm': '😌 Calm',
-    'Щасливий': '😊 Щасливий',
-    'Сумний': '😢 Сумний',
-    'Злий': '😠 Злий',
-    'Спокійний': '😌 Спокійний',
-  };
 }
 
 class MoodHistoryPage extends StatelessWidget {

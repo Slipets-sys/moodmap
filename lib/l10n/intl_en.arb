@@ -9,5 +9,6 @@
   "happy": "😊 Happy",
   "sad": "😢 Sad",
   "angry": "😠 Angry",
-  "calm": "😌 Calm"
+  "calm": "😌 Calm",
+  "mapTitle": "Emotion Map"
 }

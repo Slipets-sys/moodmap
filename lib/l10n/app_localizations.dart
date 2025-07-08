@@ -157,6 +157,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'😌 Calm'**
   String get calm;
+
+  /// No description provided for @mapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotion Map'**
+  String get mapTitle;
 }
 
 class _AppLocalizationsDelegate

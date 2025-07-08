@@ -37,4 +37,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get calm => '😌 Спокійний';
+
+  @override
+  String get mapTitle => 'Мапа емоцій';
 }
