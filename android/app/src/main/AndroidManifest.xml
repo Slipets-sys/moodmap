@@ -5,9 +5,8 @@
         android:icon="@mipmap/ic_launcher">
 
         <!-- ✅ ВСТАВЛЕНО КЛЮЧ ДЛЯ GOOGLE MAPS -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC_LiMgSTCCUH91SUSwFdVLgrtj_avr-RQ" />
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}"/>
+
 
         <activity
             android:name=".MainActivity"
