@@ -26,7 +26,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // ✅ ДОДАНО ЦЕ:
+        // ✅ ДОДАНО ще ЦЕ:
         manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "DUMMY_KEY"
     }
 
