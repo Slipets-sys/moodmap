@@ -8,18 +8,26 @@ android {
     namespace = "com.example.moodmap_final_gradlefix"
     compileSdk = flutter.compileSdkVersion
 
+    // зчитуємо значення з local.properties
+    val localProperties = java.util.Properties().apply {
+        val localFile = rootProject.file("local.properties")
+        if (localFile.exists()) {
+            localFile.inputStream().use { load(it) }
+        }
+    }
+
+    val flutterVersionCode = localProperties.getProperty("flutter.versionCode")?.toInt() ?: 1
+    val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
+
     defaultConfig {
         applicationId = "com.example.moodmap_final_gradlefix"
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInt()
+        versionCode = flutterVersionCode
         versionName = flutterVersionName
-        resValue "string", "MAPS_API_KEY", System.getenv("MAPS_API_KEY") ?: ""
 
-
-        // ✅ Підставляємо API ключ (спершу шукаємо в системних змінних, інакше тестовий)
-        manifestPlaceholders["MAPS_API_KEY"] =
-            System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
+        resValue("string", "MAPS_API_KEY", System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY")
+        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
     }
 
     buildTypes {
