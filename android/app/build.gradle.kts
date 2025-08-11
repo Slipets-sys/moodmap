@@ -1,45 +1,61 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
 android {
     namespace = "com.example.moodmap_final_gradlefix"
     compileSdk = flutter.compileSdkVersion
 
-    // Завантажуємо значення з local.properties (Flutter автоматично їх створює)
-    val localProperties = Properties().apply {
-        val localFile = rootProject.file("local.properties")
-        if (localFile.exists()) {
-            FileInputStream(localFile).use { load(it) }
-        }
+    // Завантажуємо local.properties (для локального запуску)
+    val localProperties = Properties()
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        FileInputStream(localFile).use { localProperties.load(it) }
     }
 
-    // Читаємо версію та код з local.properties
-    val flutterVersionCode = localProperties.getProperty("flutter.versionCode")?.toInt() ?: 1
+    val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
     val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
     defaultConfig {
         applicationId = "com.example.moodmap_final_gradlefix"
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode
+        versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName
 
-        // Підставляємо API ключ з GitHub Secrets або тестовий локальний
-        val mapsApiKey = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
-        resValue("string", "MAPS_API_KEY", mapsApiKey)
+        // Підставляємо API ключ: або з ENV (GitHub), або з local.properties, або тестовий
+        val mapsApiKey = System.getenv("MAPS_API_KEY")
+            ?: localProperties.getProperty("MAPS_API_KEY")
+            ?: "YOUR_LOCAL_DEBUG_KEY"
+
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
         getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            val mapsApiKey = System.getenv("MAPS_API_KEY")
+                ?: localProperties.getProperty("MAPS_API_KEY")
+                ?: "YOUR_LOCAL_RELEASE_KEY"
+            manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        }
+        getByName("debug") {
             isMinifyEnabled = false
-            val mapsApiKey = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_RELEASE_KEY"
+            isShrinkResources = false
+            val mapsApiKey = System.getenv("MAPS_API_KEY")
+                ?: localProperties.getProperty("MAPS_API_KEY")
+                ?: "YOUR_LOCAL_DEBUG_KEY"
             manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
         }
     }
