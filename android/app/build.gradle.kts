@@ -11,6 +11,15 @@ android {
     namespace = "com.example.moodmap_final_gradlefix"
     compileSdk = flutter.compileSdkVersion
 
+    // Вирівнюємо версію JVM
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+
     // Завантажуємо local.properties (для локального запуску)
     val localProperties = Properties()
     val localFile = rootProject.file("local.properties")
