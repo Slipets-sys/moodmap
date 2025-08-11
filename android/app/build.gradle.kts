@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,14 +11,15 @@ android {
     namespace = "com.example.moodmap_final_gradlefix"
     compileSdk = flutter.compileSdkVersion
 
-    // зчитуємо значення з local.properties
-    val localProperties = java.util.Properties().apply {
+    // Завантажуємо значення з local.properties (Flutter автоматично їх створює)
+    val localProperties = Properties().apply {
         val localFile = rootProject.file("local.properties")
         if (localFile.exists()) {
-            localFile.inputStream().use { load(it) }
+            FileInputStream(localFile).use { load(it) }
         }
     }
 
+    // Читаємо версію та код з local.properties
     val flutterVersionCode = localProperties.getProperty("flutter.versionCode")?.toInt() ?: 1
     val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
@@ -26,15 +30,17 @@ android {
         versionCode = flutterVersionCode
         versionName = flutterVersionName
 
-        resValue("string", "MAPS_API_KEY", System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY")
-        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
+        // Підставляємо API ключ з GitHub Secrets або тестовий локальний
+        val mapsApiKey = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
+        resValue("string", "MAPS_API_KEY", mapsApiKey)
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            manifestPlaceholders["MAPS_API_KEY"] =
-                System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_RELEASE_KEY"
+            val mapsApiKey = System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_RELEASE_KEY"
+            manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
         }
     }
 }
