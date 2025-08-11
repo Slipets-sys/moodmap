@@ -1,42 +1,41 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.moodmap_final_gradlefix"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
 
     defaultConfig {
         applicationId = "com.example.moodmap_final_gradlefix"
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = flutterVersionCode.toInt()
+        versionName = flutterVersionName
+        resValue "string", "MAPS_API_KEY", System.getenv("MAPS_API_KEY") ?: ""
 
-        // ✅ ДОДАНО ще ЦЕ:
-        manifestPlaceholders["MAPS_API_KEY"] = System.getenv("MAPS_API_KEY") ?: "DUMMY_KEY"
+
+        // ✅ Підставляємо API ключ (спершу шукаємо в системних змінних, інакше тестовий)
+        manifestPlaceholders["MAPS_API_KEY"] =
+            System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_DEBUG_KEY"
     }
 
     buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            isMinifyEnabled = false
+            manifestPlaceholders["MAPS_API_KEY"] =
+                System.getenv("MAPS_API_KEY") ?: "YOUR_LOCAL_RELEASE_KEY"
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }
